@@ -15,9 +15,10 @@ import translate from './translate';
 interface Props extends I18nProps {
   address: string;
   className?: string;
+  exchangeRate: Number;
 }
 
-function Asset ({ address, className, t }: Props): React.ReactElement<Props> {
+function VAsset ({ address, className, exchangeRate, t }: Props): React.ReactElement<Props> {
   const [isTransferOpen, setIsTransferOpen] = useState(false);
 
   const _toggleTransfer = (): void => setIsTransferOpen(!isTransferOpen);
@@ -67,15 +68,15 @@ function Asset ({ address, className, t }: Props): React.ReactElement<Props> {
       )}
       <AssetInfo
         address={address}
+        exchangeRate={exchangeRate}
         withBalance
-        withExtended
       />
     </AssetCard>
   );
 }
 
 export default translate(
-  styled(Asset)`
+  styled(VAsset)`
     .assets--Asset-buttons {
       text-align: right;
 

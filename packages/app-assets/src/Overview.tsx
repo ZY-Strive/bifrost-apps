@@ -8,7 +8,7 @@ import {ComponentProps} from './types';
 
 import React from 'react';
 import accountObservable from '@polkadot/ui-keyring/observable/accounts';
-import {withMulti, withObservable} from '@polkadot/react-api';
+import {withCalls, withMulti, withObservable} from '@polkadot/react-api';
 import {Columar, Column} from '@polkadot/react-components';
 
 import Asset from './Asset';
@@ -17,9 +17,10 @@ import translate from './translate';
 
 interface Props extends ComponentProps, I18nProps {
   accounts?: SubjectInfo[];
+  exchangeRate: Number;
 }
 
-function Overview({accounts, t}: Props): React.ReactElement<Props> {
+function Overview({accounts, exchangeRate, t}: Props): React.ReactElement<Props> {
   return (
     <Columar className='validator--ValidatorsList'>
       <Column
@@ -41,6 +42,7 @@ function Overview({accounts, t}: Props): React.ReactElement<Props> {
           <VAsset
             address={address}
             key={address}
+            exchangeRate={exchangeRate}
           />
         ))}
       </Column>
@@ -51,5 +53,13 @@ function Overview({accounts, t}: Props): React.ReactElement<Props> {
 export default withMulti(
   Overview,
   translate,
-  withObservable(accountObservable.subject, {propName: 'accounts'})
+  withObservable(accountObservable.subject, {propName: 'accounts'}),
+  withCalls<Props>(
+    ['query.exchange.exchangeRate', {
+      propName: 'exchangeRate',
+      transform: (rate: Number): string => {
+        return rate.toString()
+      }
+    }],
+  )
 );
