@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/camelcase */
-// Copyright 2019 @bifrost/app-assets authors & contributors
+// Copyright 2017-2019 @polkadot/app-accounts authors & contributors
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 
@@ -14,9 +14,6 @@ import { Button, InputAddress, InputBalance, Modal, TxButton } from '@polkadot/r
 import { Available } from '@polkadot/react-query';
 import Checks from '@polkadot/react-signer/Checks';
 import { ApiContext } from '@polkadot/react-api';
-
-import { Api as EosApi, JsonRpc, RpcError } from 'eosjs';
-import { JsSignatureProvider } from 'eosjs/dist/eosjs-jssig';
 
 import translate from '../translate';
 
@@ -77,43 +74,8 @@ function Transfer ({ className, onClose, recipientId: propRecipientId, senderId:
   const [senderId, setSenderId] = useState<string | null>(propSenderId || null);
 
   useEffect((): void => {
-    console.log("useEffect");
     if (senderId && recipientId) {
-      // setExtrinsic(api.tx.balances.transfer(recipientId, amount || ZERO));
-      console.log("in useEffect");
-
-      const defaultPrivateKey = "5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3";
-      const signatureProvider = new JsSignatureProvider([defaultPrivateKey]);
-      const rpc = new JsonRpc('http://47.101.139.226:8888');
-      const api = new EosApi({ rpc, signatureProvider, textDecoder: new TextDecoder(), textEncoder: new TextEncoder() });
-      (async () => {
-        try {
-          const result = await api.transact({
-            actions: [{
-              account: 'eosio.token',
-              name: 'transfer',
-              authorization: [{
-                actor: 'alice',
-                permission: 'active',
-              }],
-              data: {
-                from: 'alice',
-                to: 'bob',
-                quantity: '0.0001 EOS',
-                memo: '',
-              },
-            }]
-          }, {
-            blocksBehind: 3,
-            expireSeconds: 30,
-          });
-          console.dir(result);
-        } catch (e) {
-          console.log('\nCaught exception: ' + e);
-          if (e instanceof RpcError)
-            console.log(JSON.stringify(e.json, null, 2));
-        }
-      })();
+      setExtrinsic(api.tx.balances.transfer(recipientId, amount || ZERO));
 
       // We currently have not enabled the max functionality - we don't take care of weights
       // calcMax(api, balances_fees, senderId, recipientId)

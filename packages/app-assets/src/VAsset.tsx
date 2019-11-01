@@ -8,20 +8,25 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Button } from '@polkadot/react-components';
 import { AssetCard, AssetInfo } from '../../react-components/src';
+import Deposit from './modals/Deposit';
+import Withdraw from './modals/Withdraw';
 
-import Transfer from './modals/Transfer';
 import translate from './translate';
 
 interface Props extends I18nProps {
   address: string;
   className?: string;
   exchangeRate: Number;
+  eos: any;
+  eosAccount: any;
 }
 
-function VAsset ({ address, className, exchangeRate, t }: Props): React.ReactElement<Props> {
-  const [isTransferOpen, setIsTransferOpen] = useState(false);
+function VAsset ({ address, className, exchangeRate, eos, eosAccount, t }: Props): React.ReactElement<Props> {
+  const [isDepositOpen, setIsDepositOpen] = useState(false);
+  const [isWithdrawOpen, setIsWithdrawOpen] = useState(false);
 
-  const _toggleTransfer = (): void => setIsTransferOpen(!isTransferOpen);
+  const _toggleDeposit = (): void => setIsDepositOpen(!isDepositOpen);
+  const _toggleWithdraw = (): void => setIsWithdrawOpen(!isWithdrawOpen);
 
   // FIXME It is a bit heavy-handled switching of being editable here completely
   // (and removing the tags, however the keyring cannot save these)
@@ -34,15 +39,15 @@ function VAsset ({ address, className, exchangeRate, t }: Props): React.ReactEle
               icon='paper plane'
               isPrimary
               label={t('deposit')}
-              onClick={_toggleTransfer}
+              onClick={_toggleDeposit}
               size='small'
-              tooltip={t('Deposit vtoken')}
+              tooltip={t('Deposit original chain token')}
             />
             <Button
               icon='paper plane'
               isPrimary
               label={t('withdraw')}
-              onClick={_toggleTransfer}
+              onClick={_toggleWithdraw}
               size='small'
               tooltip={t('Withdraw vtoken')}
             />
@@ -57,11 +62,21 @@ function VAsset ({ address, className, exchangeRate, t }: Props): React.ReactEle
     >
       {address && (
         <>
-          {isTransferOpen && (
-            <Transfer
-              key='modal-transfer'
-              onClose={_toggleTransfer}
-              senderId={address}
+          {isDepositOpen && (
+            <Deposit
+              key='modal-deposit'
+              onClose={_toggleDeposit}
+              address={address}
+              eos={eos}
+              eosAccount={eosAccount}
+            />
+          )}
+          {isWithdrawOpen && (
+            <Withdraw
+              key='modal-withdraw'
+              onClose={_toggleWithdraw}
+              address={address}
+              eosAccount={eosAccount}
             />
           )}
         </>
